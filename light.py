@@ -62,7 +62,7 @@ fLightShader = '''
   }'''
 
 
-class RadialLight(ScreenQuad):
+class PointLight(ScreenQuad):
     def __init__(self, position, camera,  color, intensity):
         ScreenQuad.__init__(self, 2, vLightShader, fLightShader)
         self.setUniform("u_frustumrays", Uniform(
@@ -88,3 +88,4 @@ class RadialLight(ScreenQuad):
         self.setUniform("u_vpsize", Uniform(struct.pack('2f', Display.width, Display.height)))
         self.setUniform("s_gbuffer", Uniform(0xffff, 0x2901));
 
+    

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from camera import PerspectiveCamera
 from mesh import Mesh
-from light import RadialLight
+from light import PointLight
 from overlay import LightBuffer, NormalBuffer
 from game import Game
 from display import Display
@@ -24,10 +24,10 @@ class MyGame(Game):
         intensityWhite = 10.0
         intensityColor = 15.0
 
-        self.add(RadialLight([-50, -10, 0], camera, colorWhite, intensityWhite ))      
-        self.add(RadialLight([50, -10, 0], camera, colorWhite, intensityWhite ))
-        self.add(RadialLight([-10,50,50], camera, colorBlue, intensityColor ))
-        self.add(RadialLight([10,50,50], camera, colorGreen, intensityColor ))
+        self.add(PointLight([-50, -10, 0], camera, colorWhite, intensityWhite ))      
+        self.add(PointLight([50, -10, 0], camera, colorWhite, intensityWhite ))
+        self.add(PointLight([-10,50,50], camera, colorBlue, intensityColor ))
+        self.add(PointLight([10,50,50], camera, colorGreen, intensityColor ))
 
         size = Display.width/2.0
         self.add(NormalBuffer(0,0, size, size/Display.aspect))
