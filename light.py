@@ -81,9 +81,9 @@ class RadialLight(ScreenQuad):
             useBuffer = True)
         self.setAttribute("a_texcoord", self.texcoord)
         self.setUniform("u_view", camera.view)
-        self.setUniform("u_lightpos", position)
-        self.setUniform("u_lightcolor", color)
-        self.setUniform("u_lightintensity", intensity)
+        self.setUniform("u_lightpos", Uniform(struct.pack('3f', *position)))
+        self.setUniform("u_lightcolor", Uniform(struct.pack('3f', *color)))
+        self.setUniform("u_lightintensity", Uniform(struct.pack('f', intensity)))
         self.setUniform("u_farplane", camera.far)
         self.setUniform("u_vpsize", Uniform(struct.pack('2f', Display.width, Display.height)))
         self.setUniform("s_gbuffer", Uniform(0xffff, 0x2901));
