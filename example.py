@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from camera import PerspectiveCamera
 from mesh import Mesh
-from light import PointLight
-from overlay import LightBuffer, NormalBuffer
+from light import PointLight, TubeLight
 from game import Game
 from display import Display
 import signal
@@ -15,7 +14,7 @@ class MyGame(Game):
 
         camera = PerspectiveCamera([0.0, 0.0, 0.0], near=0.001, far=500.0, fov=90)
         
-        self.lion = Mesh("res/models/lion.obj", camera, position = [0, -5, 50], scale = 40.0)
+        self.lion = Mesh("res/models/lion.obj", camera, position = [0, -10, 50], scale = 40.0)
         self.add(self.lion)
         
         colorWhite = [1.0, 1.0, 1.0]
@@ -24,14 +23,12 @@ class MyGame(Game):
         intensityWhite = 10.0
         intensityColor = 15.0
 
-        self.add(PointLight([-50, -10, 0], camera, colorWhite, intensityWhite ))      
-        self.add(PointLight([50, -10, 0], camera, colorWhite, intensityWhite ))
-        self.add(PointLight([-10,50,50], camera, colorBlue, intensityColor ))
-        self.add(PointLight([10,50,50], camera, colorGreen, intensityColor ))
-
-        size = Display.width/2.0
-        self.add(NormalBuffer(0,0, size, size/Display.aspect))
-        self.add(LightBuffer(size,0,size, size/Display.aspect))
+        self.add(PointLight(camera, [-50, -10, 0], colorWhite, intensityWhite ))      
+        self.add(PointLight(camera, [50, -10, 0], colorWhite, intensityWhite ))
+        self.add(PointLight(camera, [-10,50,50], colorBlue, intensityColor ))
+        self.add(PointLight(camera, [10,50,50], colorGreen, intensityColor ))
+        self.laser = TubeLight(camera, [-50, 18.0, 25], [1.0, 0, 0], 10.0, 10.0, [1, 0, 0], 100)
+        self.add(self.laser)    
 
         def handle_sigint(signum, frame):
             self.stop()
@@ -40,7 +37,10 @@ class MyGame(Game):
 
     def update(self, overruns):
         self.lion.rotation = [0, (self.lion.rotation[1] + 1 + overruns) % 360, 0]
-        
+        laserpos = self.laser.position[0]+2
+        if laserpos > 50:
+            laserpos = -50
+        self.laser.position = [laserpos, self.laser.position[1], self.laser.position[2]]
 
 game = MyGame()
 game.start()
