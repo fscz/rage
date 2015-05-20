@@ -95,11 +95,6 @@ class PointLight(ScreenQuad):
         self.setUniform("s_gbuffer", Uniform(0xffff, 0x2901));
 
 
-    def __update(self):
-        self.__positionUniform.update(struct.pack('3f', *self.position))
-        self.__colorUniform.update(struct.pack('3f', *self.color))
-        self.__intensityUniform.update(struct.pack('f', self.intensity))
-
     @property
     def position(self):
         return self.__position
@@ -107,7 +102,7 @@ class PointLight(ScreenQuad):
     @position.setter
     def position(self, value):
         self.__position = value
-        self.__update()
+        self.__positionUniform.update(struct.pack('3f', *self.position))
 
     @position.getter
     def position(self):
@@ -120,24 +115,24 @@ class PointLight(ScreenQuad):
     @color.setter
     def color(self, value):
         self.__color = value
-        self.__update()
+        self.__colorUniform.update(struct.pack('3f', *self.color))
 
     @color.getter
     def color(self):
         return self.__color
 
     @property
-    def intentsity(self):
-        return self.__intentsity
+    def intensity(self):
+        return self.__intensity
 
-    @intentsity.setter
-    def intentsity(self, value):
-        self.__intentsity = value
-        self.__update()
+    @intensity.setter
+    def intensity(self, value):
+        self.__intensity = value
+        self.__intensityUniform.update(struct.pack('f', self.intensity))
 
-    @intentsity.getter
-    def intentsity(self):
-        return self.__intentsity
+    @intensity.getter
+    def intensity(self):
+        return self.__intensity
 
 
 vTubeLight = '''
@@ -258,14 +253,7 @@ class TubeLight(ScreenQuad):
         self.setUniform("u_lightdirection", self.__directionUniform)
         self.setUniform("u_lightlength", self.__lengthUniform)
         self.setUniform("u_lightradius", self.__radiusUniform)
-
-    def __update(self):
-        self.__positionUniform.update(struct.pack('3f', *self.position))
-        self.__colorUniform.update(struct.pack('3f', *self.color))
-        self.__intensityUniform.update(struct.pack('f', self.intensity))
-        self.__directionUniform.update(struct.pack('3f', self.direction))
-        self.__lengthUniform.update(struct.pack('3f', self.length))
-        self.__radiusUniform.update(struct.pack('f', self.radius))
+        
 
     @property
     def position(self):
@@ -274,7 +262,7 @@ class TubeLight(ScreenQuad):
     @position.setter
     def position(self, value):
         self.__position = value
-        self.__update()
+        self.__positionUniform.update(struct.pack('3f', *self.position))
 
     @position.getter
     def position(self):
@@ -287,7 +275,7 @@ class TubeLight(ScreenQuad):
     @direction.setter
     def direction(self, value):
         self.__direction = value
-        self.__update()
+        self.__directionUniform.update(struct.pack('3f', *self.direction))
 
     @direction.getter
     def direction(self):
@@ -300,11 +288,24 @@ class TubeLight(ScreenQuad):
     @radius.setter
     def radius(self, value):
         self.__radius = value
-        self.__update()
+        self.__radiusUniform.update(struct.pack('f', self.radius))
 
     @radius.getter
     def radius(self):
         return self.__radius
+
+    @property
+    def length(self):
+        return self.__length
+
+    @length.setter
+    def length(self, value):
+        self.__length = value
+        self.__lengthUniform.update(struct.pack('f', self.length))
+
+    @length.getter
+    def length(self):
+        return self.__length
 
     @property
     def color(self):
@@ -313,21 +314,21 @@ class TubeLight(ScreenQuad):
     @color.setter
     def color(self, value):
         self.__color = value
-        self.__update()
+        self.__colorUniform.update(struct.pack('3f', *self.color))
 
     @color.getter
     def color(self):
         return self.__color
 
     @property
-    def intentsity(self):
-        return self.__intentsity
+    def intensity(self):
+        return self.__intensity
 
-    @intentsity.setter
-    def intentsity(self, value):
-        self.__intentsity = value
-        self.__update()
+    @intensity.setter
+    def intensity(self, value):
+        self.__intensity = value
+        self.__intensityUniform.update(struct.pack('f', self.intensity))
 
-    @intentsity.getter
-    def intentsity(self):
-        return self.__intentsity
+    @intensity.getter
+    def intensity(self):
+        return self.__intensity
