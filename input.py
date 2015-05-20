@@ -304,8 +304,8 @@ class HIDInput:
     def stop(self):        
         self.__running = False
         
-    def dispatch(self, ev_type, *args):
-        self.listener.dispatch(ev_type, args)
+    def dispatch(self, *args):
+        self.listener.dispatch(*args)
 
     def __loop__(self, **kwargs):         
         input_fn = kwargs.get('input_fn')
@@ -463,20 +463,15 @@ class HIDInput:
                             if 'shift' in self.modifiers else 0]
                         if l == 'shift' or l == 'alt':
                             self.modifiers.append(l)
-                        self.dispatch(
-                            'on_key_down',
-                            keycodes[l.lower()],
-                            ev_code, keys_str.get(l, l),
-                            self.modifiers)
+                        self.dispatch(                            
+                            keycodes[l.lower()], keys_str.get(l, l), 'on_key_down',
+                            ev_code, self.modifiers)
                     if ev_value == 0:
                         l = keyboard_keys[ev_code][-1
                             if 'shift' in self.modifiers else 0]
-                        self.dispatch(
-                            'on_key_up',
-                            keycodes[l.lower()],
-                            ev_code,
-                            keys_str.get(l, l),
-                            self.modifiers)
+                        self.dispatch(                            
+                            keycodes[l.lower()], keys_str.get(l, l), 'on_key_up',
+                            ev_code, self.modifiers)
                         if l == 'shift':
                             self.modifiers.remove('shift')
                     # if ev_value == 2:
@@ -600,7 +595,7 @@ class HIDInput:
             point = {'x': .5, 'y': .5, 'id': 0, '_avoid': True}
 
         # read until the end
-        while fd:
+        while fd and self.__running:
 
             data = fd.read(struct_input_event_sz)
             if len(data) < struct_input_event_sz:
@@ -621,6 +616,7 @@ class HIDInput:
 
         def update(self, dispatch_fn):
             # dispatch all event from threads
+
             try:
                 while True:
                     event_type, touch = self.queue.popleft()

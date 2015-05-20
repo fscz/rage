@@ -6,24 +6,27 @@ import signal
 import os
 import collections
 import re
+import threading
 
 re_evdev = re.compile("event\d+")
 
+
 class Game(Scene):
     def __init__(self):
+        self.__lock__ = threading.Lock()
         Scene.__init__(self)
-        for evdev in [evdev for evdev in os.listdir('/dev/input') if re_evdev.match(evdev) is not None ]:
-            evdev = HIDInput("/dev/input/%s" % evdev, self)
-            self.__eventqueue = []
+        self.__events = []
+        for devname in [evdev for evdev in os.listdir('/dev/input') if re_evdev.match(evdev) is not None ]:
+            evdev = HIDInput("/dev/input/%s" % devname, self)            
             evdev.start()
         def handle_sigint(signum, frame):
             self.stop()
             sys.exit()
         signal.signal(signal.SIGINT, handle_sigint)
 
-    def dispatch(self, ev_type, *args):
-        print ev_type, args
-        self.__eventqueue.append(ev_type)
+    def dispatch(self, *args):
+        with self.__lock__:
+            self.__events.append(args)
 
     @property
     def events(self):
@@ -31,6 +34,9 @@ class Game(Scene):
 
     @events.getter
     def events(self):
-        l = self.__eventqueue
-        self.__eventqueue = []
-        return l 
+        return self.__events
+
+    def __update__(self, overruns):
+        with self.__lock__:
+            self.update(overruns)
+            del self.__events[:]
