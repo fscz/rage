@@ -19,7 +19,7 @@ fPointLight = '''
   uniform mat4 u_view;
   uniform vec2 u_vpsize;
   uniform float u_farplane;
-  uniform vec4 u_lightpos;
+  uniform vec3 u_lightpos;
   uniform vec3 u_lightcolor;
   uniform float u_lightintensity;
   varying vec3 v_viewray;
@@ -49,10 +49,11 @@ fPointLight = '''
     float depth = unpackFloat(sample.zw) * u_farplane;
 
     vec3 reconstPos = v_viewray * depth;
-
-    vec3 lightDir = (u_view * u_lightpos).xyz - reconstPos;
+    
+    vec3 lightDir = u_lightpos - (u_view * vec4(reconstPos, 1.0)).xyz;
 
     float lightDist = sqrt(dot(lightDir, lightDir));
+
     lightDir = lightDir / lightDist;
     float match = clamp(dot(lightDir, normal), 0.0, 1.0);
 
@@ -86,7 +87,7 @@ class PointLight(ScreenQuad):
         self.__intensity = intensity
         self.__intensityUniform = Uniform(struct.pack('f', intensity))
         self.setAttribute("a_texcoord", self.texcoord)
-        self.setUniform("u_view", camera.view)
+        self.setUniform("u_view", camera.inv_view)
         self.setUniform("u_lightpos", self.__positionUniform)
         self.setUniform("u_lightcolor", self.__colorUniform)
         self.setUniform("u_lightintensity", self.__intensityUniform)
@@ -102,7 +103,7 @@ class PointLight(ScreenQuad):
     @position.setter
     def position(self, value):
         self.__position = value
-        self.__positionUniform.update(struct.pack('3f', *self.position))
+        self.__positionUniform.update(struct.pack('3f', *value))
 
     @position.getter
     def position(self):
@@ -152,7 +153,7 @@ fTubeLight = '''
   uniform mat4 u_view;
   uniform vec2 u_vpsize;
   uniform float u_farplane;
-  uniform vec4 u_lightpos;
+  uniform vec3 u_lightpos;
   uniform vec3 u_lightcolor;
   uniform float u_lightintensity;
   uniform vec3 u_lightdirection;
@@ -180,13 +181,13 @@ fTubeLight = '''
     if (all(equal(sample,nothing))) discard;
         
     float depth = unpackFloat(sample.zw) * u_farplane;
-    vec3 reconstPos = v_viewray * depth;
-    vec3 tubePos = (u_view * u_lightpos).xyz;
+    vec3 reconstPos = (u_view * vec(v_viewray * depth, 1.0)).xyz;
+    
     vec3 tubeDirection = normalize((u_view * vec4(u_lightdirection, 0.0)).xyz);
 
-    vec3 lineEnd = tubePos + u_lightlength * tubeDirection;
+    vec3 lineEnd = u_lightpos + u_lightlength * tubeDirection;
 
-    vec3 lightDif = reconstPos - tubePos;
+    vec3 lightDif = reconstPos - u_lightpos;
     float alpha = dot ( normalize(lightDif), tubeDirection );
 
     if ( dot ( normalize(reconstPos - lineEnd), tubeDirection ) > 0.0 || alpha < 0.0 ) {
@@ -194,7 +195,7 @@ fTubeLight = '''
     } // points must be perpendicular to the line that is given by (lightpos, lightlength, lightdirection)
 
     // find the perpendicular
-    vec3 perpPoint = tubePos + cos(alpha) * sqrt(dot(lightDif,lightDif)) * tubeDirection;
+    vec3 perpPoint = u_lightpos + cos(alpha) * sqrt(dot(lightDif,lightDif)) * tubeDirection;
     vec3 perpDif = perpPoint - reconstPos;
     float perpDist = sqrt( dot (perpDif, perpDif) );    
 
@@ -243,7 +244,7 @@ class TubeLight(ScreenQuad):
         self.__length = length
         self.__lengthUniform = Uniform(struct.pack('f', length))
         self.setAttribute("a_texcoord", self.texcoord)
-        self.setUniform("u_view", camera.view)
+        self.setUniform("u_view", camera.inv_view)
         self.setUniform("u_lightpos", self.__positionUniform)
         self.setUniform("u_lightcolor", self.__colorUniform)
         self.setUniform("u_lightintensity", self.__intensityUniform)

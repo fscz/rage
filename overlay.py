@@ -106,9 +106,9 @@ fShaderText= '''
 
 fontTex = None
 fontInfo = None
-with open('res/fonts/Vera_20.data', 'rb') as f:
+with open('rage/res/fonts/Vera_20.data', 'rb') as f:
     fontTex = f.read()
-with open('res/fonts/Vera_20.json', 'r') as f:
+with open('rage/res/fonts/Vera_20.json', 'r') as f:
     fontInfo = simplejson.loads(f.read())
 
 textureAtlas = Uniform(

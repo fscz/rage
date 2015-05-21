@@ -42,7 +42,7 @@ fShaderMesh = '''
 
 class Mesh(pygre.SceneObject):
 
-    def __init__(self, vertices, normals, camera, position=[0.0, 0.0, 0.0], rotation=[0.0,0.0,0.0], scale=1.0):        
+    def __init__(self, vertices, normals, camera, position=[0.0, 0.0, 0.0], rotation=[0.0,0.0,0.0], scale=1.0):
         pygre.SceneObject.__init__(self, 5, vShaderMesh, fShaderMesh, Draw( 0x0004, 0, len(vertices) / 3, None))
 
         a_position = Attribute(

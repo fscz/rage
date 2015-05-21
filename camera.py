@@ -31,6 +31,7 @@ class PerspectiveCamera(object):
              rayX, rayY, rayZ,
             ]
         self.__view = Uniform16f()
+        self.__inv_view = Uniform16f()
         self.__update_view()
 
         self.__projection = Uniform (
@@ -44,7 +45,8 @@ class PerspectiveCamera(object):
         self.view.update(
             (m.translate(-self.__position[0], -self.__position[1], -self.__position[2]) 
              * m.rotationX(-self.__rotation[0]) * m.rotationY(-self.__rotation[1]) * m.rotationZ(-self.__rotation[2])).flatten())
-            
+        self.inv_view.update((m.translate(self.__position[0], self.__position[1], self.__position[2]) 
+             * m.rotationX(self.__rotation[0]) * m.rotationY(self.__rotation[1]) * m.rotationZ(self.__rotation[2])).flatten())
                             
     @property
     def position(self):
@@ -113,6 +115,15 @@ class PerspectiveCamera(object):
     @view.getter
     def view(self):
         return self.__view
+
+    @property
+    def inv_view(self):
+        return self.__inv_view
+
+    @inv_view.getter
+    def inv_view(self):
+        return self.__inv_view
+
 
     @property
     def projection(self):

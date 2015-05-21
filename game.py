@@ -45,5 +45,5 @@ class Game(Scene):
         return self.__events
 
     def __update__(self, overruns):
-        with self.__lock__:
-            self.update(overruns)
+        with self.__lock__:            
+            self.update(overruns)            
