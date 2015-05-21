@@ -5,7 +5,7 @@ import struct
 import matrix as m
 from helpers import Uniform16f
 
-class PerspectiveCamera:
+class PerspectiveCamera(object):
     def __init__(self, position=[0.0,0.0,0.0], rotation=[0.0,0.0,0.0], near=0.001, far=500.0, fov=90):
         screenWidth = Display.width
         screenHeight = Display.height
@@ -42,8 +42,8 @@ class PerspectiveCamera:
 
     def __update_view(self):
         self.view.update(
-            (m.translate(-self.position[0], -self.position[1], -self.position[2]) 
-             * m.rotationX(-self.rotation[0]) * m.rotationY(-self.rotation[1]) * m.rotationZ(-self.rotation[2])).flatten())
+            (m.translate(-self.__position[0], -self.__position[1], -self.__position[2]) 
+             * m.rotationX(-self.__rotation[0]) * m.rotationY(-self.__rotation[1]) * m.rotationZ(-self.__rotation[2])).flatten())
             
                             
     @property
@@ -61,7 +61,7 @@ class PerspectiveCamera:
 
     @property
     def rotation(self):
-        return self.__position
+        return self.__rotation
 
     @rotation.getter
     def rotation(self):

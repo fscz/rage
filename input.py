@@ -18,7 +18,7 @@ class HIDInput:
     
     def dispatch(self, event):
         if isinstance(event, KeyEvent):
-            self.listener.dispatch( event.scancode, event.keycode, event.keystate )
+            self.listener.dispatch( event.keycode, event.scancode, event.keystate )
 
     def __loop__(self):                
         self.dev.grab()

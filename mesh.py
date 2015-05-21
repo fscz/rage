@@ -42,21 +42,18 @@ fShaderMesh = '''
 
 class Mesh(pygre.SceneObject):
 
-    def __init__(self, objPath, camera, position=[0.0, 0.0, 0.0], rotation=[0.0,0.0,0.0], scale=1.0):        
-
-        meshObj = Obj(objPath)
-
-        pygre.SceneObject.__init__(self, 5, vShaderMesh, fShaderMesh, Draw( 0x0004, 0, len(meshObj.vertices) / 3, None))
+    def __init__(self, vertices, normals, camera, position=[0.0, 0.0, 0.0], rotation=[0.0,0.0,0.0], scale=1.0):        
+        pygre.SceneObject.__init__(self, 5, vShaderMesh, fShaderMesh, Draw( 0x0004, 0, len(vertices) / 3, None))
 
         a_position = Attribute(
-            struct.pack ('%df' % len(meshObj.vertices), *meshObj.vertices)
+            struct.pack ('%df' % len(vertices), *vertices)
             , 0x1406
             , 3
             , True
             )
 
         a_normal = Attribute(
-            struct.pack('%df' % len(meshObj.normals), *meshObj.normals)
+            struct.pack('%df' % len(normals), *normals)
             , 0x1406
             , 3
             , True
@@ -121,3 +118,7 @@ class Mesh(pygre.SceneObject):
     def scale(self):
         return self.__scale
         
+
+def fromObjFile(objPath, camera, position=[0.0, 0.0, 0.0], rotation=[0.0,0.0,0.0], scale=1.0):
+    meshObj = Obj(objPath)
+    return Mesh(meshObj.vertices, meshObj.normals, camera, position, rotation, scale)

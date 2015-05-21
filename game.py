@@ -24,6 +24,11 @@ class Game(Scene):
             self.stop()
         signal.signal(signal.SIGINT, handle_sigint)
 
+    def quit(self):
+        for evdev in self.input_providers:
+            evdev.stop()                
+        self.stop()
+
     def dispatch(self, *args):
         with self.__lock__:
             if args[2] == 0:
