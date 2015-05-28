@@ -181,21 +181,19 @@ fTubeLight = '''
     if (all(equal(sample,nothing))) discard;
         
     float depth = unpackFloat(sample.zw) * u_farplane;
-    vec3 reconstPos = (u_view * vec(v_viewray * depth, 1.0)).xyz;
-    
-    vec3 tubeDirection = normalize((u_view * vec4(u_lightdirection, 0.0)).xyz);
+    vec3 reconstPos = (u_view * vec4(v_viewray * depth, 1.0)).xyz;
 
-    vec3 lineEnd = u_lightpos + u_lightlength * tubeDirection;
+    vec3 lineEnd = u_lightpos + u_lightlength * u_lightdirection;
 
     vec3 lightDif = reconstPos - u_lightpos;
-    float alpha = dot ( normalize(lightDif), tubeDirection );
+    float alpha = dot ( normalize(lightDif), u_lightdirection );
 
-    if ( dot ( normalize(reconstPos - lineEnd), tubeDirection ) > 0.0 || alpha < 0.0 ) {
+    if ( dot ( normalize(reconstPos - lineEnd), u_lightdirection ) > 0.0 || alpha < 0.0 ) {
        discard; 
     } // points must be perpendicular to the line that is given by (lightpos, lightlength, lightdirection)
 
     // find the perpendicular
-    vec3 perpPoint = u_lightpos + cos(alpha) * sqrt(dot(lightDif,lightDif)) * tubeDirection;
+    vec3 perpPoint = u_lightpos + cos(alpha) * sqrt(dot(lightDif,lightDif)) * u_lightdirection;
     vec3 perpDif = perpPoint - reconstPos;
     float perpDist = sqrt( dot (perpDif, perpDif) );    
 

@@ -20,13 +20,11 @@ class HIDInput:
         if isinstance(event, KeyEvent):
             self.listener.dispatch( event.keycode, event.scancode, event.keystate )
 
-    def __loop__(self):                
-        self.dev.grab()
+    def __loop__(self):                        
         while self.__running:
             r,w,x = select([self.dev], [], [])
             for ev in self.dev.read():
                 self.dispatch(categorize(ev))
-        self.dev.ungrab()
 
     def stop(self):
         self.__running = False
